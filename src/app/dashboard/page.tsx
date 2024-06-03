@@ -2,60 +2,80 @@
 
 import championsData from "@data/champion.json";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer } from "react";
 import { RandomItems } from "@/components/RandomItems";
 import { RandomRunes } from "@/components/RandomRunes";
-import { getRandomItems } from "@utils/randomItems";
-import { getRandomRunes } from "@utils/randomRunes";
-import { getRandomSummoners } from "@utils/randomSummoners";
+import { RandomRole } from "@/components/RandomRole";
 import { RandomSummoners } from "@/components/RandomSummoners";
-import { Champion, Item, Rune, Summoner } from "@/types";
+import {
+  getRandomRunes,
+  getRandomSummoners,
+  getRandomRole,
+  getRandomItems,
+} from "@utils";
+import {
+  SET_RANDOM_CHAMPIONS,
+  SET_LAST_CHAMPION,
+  SET_IS_RUNNING,
+  SET_INDEX,
+  SET_RANDOM_LEGENDARY_ITEMS,
+  SET_RANDOM_RUNES,
+  SET_RANDOM_SUMMONERS,
+  SET_RANDOM_ROLES,
+  initialState,
+  reducer,
+} from "@/store";
 
 export default function Page() {
-  const championEntries = Object.entries(championsData.data);
-  const [champions, setRandomChampions] = useState<Champion[]>([]);
-  const [lastChampion, setLastChampion] = useState<Champion | null>(null);
-  const [isRunning, setIsRunning] = useState(false);
-  const [index, setIndex] = useState(0);
+  const championEntries = Object.values(championsData.data);
 
-  const [randomLegendaryItems, setRandomLegendaryItems] = useState<Item[]>([]);
-  const [randomRunes, setRandomRunes] = useState<Rune[]>([]);
-  const [randomSummoners, setRandomSummoners] = useState<Summoner[]>([]);
-
-  const items = getRandomItems();
+  const [state, dispatch] = useReducer(reducer, initialState);
   const runes = getRandomRunes();
   const summoners = getRandomSummoners();
+  const roles = getRandomRole();
 
   useEffect(() => {
-    let intervalId: NodeJS.Timeout;
+    if (!state.isRunning) return;
 
-    if (isRunning) {
-      intervalId = setInterval(() => {
-        setIndex((prevIndex) => (prevIndex + 1) % champions.length);
-        setRandomLegendaryItems(items);
+    const intervalId = setInterval(() => {
+      dispatch({
+        type: SET_INDEX,
+        payload: (state.index + 1) % state.champions.length,
+      });
 
-        setRandomRunes(runes);
+      dispatch({ type: SET_RANDOM_RUNES, payload: runes });
 
-        if (summoners !== undefined) {
-          setRandomSummoners(summoners);
-        }
-      }, 150);
+      dispatch({
+        type: SET_RANDOM_LEGENDARY_ITEMS,
+        payload: getRandomItems(state.randomRoles[0]?.name),
+      });
 
-      setTimeout(() => {
-        clearInterval(intervalId);
-        setLastChampion(champions[index]);
-        setIsRunning(false);
-      }, 2000);
-    }
+      if (summoners !== undefined) {
+        dispatch({ type: SET_RANDOM_SUMMONERS, payload: summoners });
+      }
+    }, 150);
+
+    setTimeout(() => {
+      clearInterval(intervalId);
+      dispatch({
+        type: SET_LAST_CHAMPION,
+        payload: state.champions[state.index],
+      });
+      dispatch({ type: SET_IS_RUNNING, payload: false });
+    }, 2000);
   });
 
   const handleButtonClick = () => {
-    setLastChampion(null);
+    dispatch({
+      type: SET_LAST_CHAMPION,
+      payload: null,
+    });
+
     const randomItem = [];
 
     for (let index = 0; index < 30; index++) {
       const randomIndex = Math.floor(Math.random() * championEntries.length);
-      const [, champion] = championEntries[randomIndex];
+      const champion = championEntries[randomIndex];
       const selectedChampion = {
         version: champion.version,
         name: champion.name,
@@ -67,43 +87,50 @@ export default function Page() {
       randomItem.push(selectedChampion);
     }
 
-    setIsRunning(true);
-    setRandomChampions(randomItem);
+    dispatch({ type: SET_IS_RUNNING, payload: true });
+    dispatch({
+      type: SET_RANDOM_CHAMPIONS,
+      payload: randomItem,
+    });
+    dispatch({ type: SET_RANDOM_ROLES, payload: roles });
   };
 
   return (
     <>
       <section>
         <h1>Champions List</h1>
+        <RandomRole randomRole={state.randomRoles} />
         <button onClick={handleButtonClick}>Get random champion</button>
 
-        {isRunning && champions.length > 0 && (
+        {state.isRunning && state.champions.length > 0 && (
           <>
-            <div>{champions[index]?.name}</div>
+            <div>{state.champions[state.index]?.name}</div>
             <Image
-              src={`https://ddragon.leagueoflegends.com/cdn/${champions[index]?.version}/img/champion/${champions[index]?.image}`}
-              alt={champions[index]?.name}
-              width={champions[index]?.width}
-              height={champions[index]?.heigth}
+              src={`https://ddragon.leagueoflegends.com/cdn/${
+                state.champions[state.index]?.version
+              }/img/champion/${state.champions[state.index]?.image}`}
+              alt={state.champions[state.index]?.name}
+              width={state.champions[state.index]?.width}
+              height={state.champions[state.index]?.heigth}
             />
           </>
         )}
 
-        {!isRunning && lastChampion && (
+        {!state.isRunning && state.lastChampion && (
           <>
-            <div>{lastChampion.name}</div>
+            <div>{state.lastChampion.name}</div>
             <Image
-              src={`https://ddragon.leagueoflegends.com/cdn/${lastChampion.version}/img/champion/${lastChampion.image}`}
-              alt={lastChampion.name}
-              width={lastChampion.width}
-              height={lastChampion.heigth}
+              src={`https://ddragon.leagueoflegends.com/cdn/${state.lastChampion.version}/img/champion/${state.lastChampion.image}`}
+              alt={state.lastChampion.name}
+              width={state.lastChampion.width}
+              height={state.lastChampion.heigth}
             />
           </>
         )}
 
-        <RandomItems randomLegendaryItems={randomLegendaryItems} />
-        <RandomSummoners randomSummoner={randomSummoners} />
-        <RandomRunes randomRunes={randomRunes} />
+        <RandomItems randomLegendaryItems={state.randomLegendaryItems} />
+        <RandomSummoners randomSummoner={state.randomSummoners} />
+        <RandomRunes randomRunes={state.randomRunes} />
       </section>
     </>
   );
