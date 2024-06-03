@@ -18,6 +18,12 @@ const excludedItems = [
   "Guardian's Amulet",
   "Guardian's Blade",
   "Guardian's Dirk",
+  "Spellthief's Edge",
+  "Steel Shoulderguards",
+  "Relic Shield",
+  "Spectral Sickle",
+  "World Atlas",
+  "Obsidian Edge",
 ];
 
 const specialItems = new Set([
@@ -28,7 +34,7 @@ const specialItems = new Set([
 
 const boots = ["3047", "3009", "3010", "3020", "3111", "3158", "3006"];
 
-export function getRandomItems(): Item[] {
+export function getRandomItems(role: string): Item[] {
   const itemsEntries = Object.entries(itemsData.data);
 
   const filteredLegendaryItems = itemsEntries.filter(
@@ -38,17 +44,40 @@ export function getRandomItems(): Item[] {
       !excludedItems.includes(item?.name)
   );
 
-  const filteredStartItems = itemsEntries.filter(
-    ([, item]) =>
+  const filteredStartItems = itemsEntries.filter(([, item]) => {
+    if (role === "Support") {
+      return (
+        Array.isArray(item.tags) &&
+        (item.tags as string[]).includes("Lane") &&
+        (item.tags as string[]).includes("GoldPer") &&
+        item?.inStore !== false &&
+        !item?.stacks &&
+        !excludedItems.includes(item?.name)
+      );
+    }
+
+    if (role === "Jungle") {
+      return (
+        Array.isArray(item.tags) &&
+        item?.inStore !== false &&
+        !item?.stacks &&
+        (item.tags as string[]).includes("Jungle") &&
+        !(item.tags as string[]).includes("Lane") &&
+        !excludedItems.includes(item?.name)
+      );
+    }
+
+    return (
       Array.isArray(item.tags) &&
-      item.tags.includes("Lane") &&
+      (item.tags as string[]).includes("Lane") &&
       item?.inStore !== false &&
       !item?.stacks &&
-      !item.tags.includes("Vision") &&
-      !item.tags.includes("Active") &&
-      !item.tags.includes("GoldPer") &&
+      !(item.tags as string[]).includes("Vision") &&
+      !(item.tags as string[]).includes("Active") &&
+      !(item.tags as string[]).includes("GoldPer") &&
       !excludedItems.includes(item?.name)
-  );
+    );
+  });
 
   const formattedStartItems = filteredStartItems.map(([, item]) => ({
     version: itemsData.version,
