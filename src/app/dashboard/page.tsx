@@ -1,6 +1,5 @@
 "use client";
 
-import championsData from "@data/champion.json";
 import Image from "next/image";
 import { useEffect, useReducer } from "react";
 import { RandomItems } from "@/components/RandomItems";
@@ -12,6 +11,7 @@ import {
   getRandomSummoners,
   getRandomRole,
   getRandomItems,
+  getRandomChampion,
 } from "@utils";
 import {
   SET_RANDOM_CHAMPIONS,
@@ -27,8 +27,6 @@ import {
 } from "@/store";
 
 export default function Page() {
-  const championEntries = Object.values(championsData.data);
-
   const [state, dispatch] = useReducer(reducer, initialState);
   const runes = getRandomRunes();
   const roles = getRandomRole();
@@ -71,26 +69,10 @@ export default function Page() {
       payload: null,
     });
 
-    const randomItem = [];
-
-    for (let index = 0; index < 30; index++) {
-      const randomIndex = Math.floor(Math.random() * championEntries.length);
-      const champion = championEntries[randomIndex];
-      const selectedChampion = {
-        version: champion.version,
-        name: champion.name,
-        image: champion.image.full,
-        width: champion.image.w,
-        heigth: champion.image.h,
-      };
-
-      randomItem.push(selectedChampion);
-    }
-
     dispatch({ type: SET_IS_RUNNING, payload: true });
     dispatch({
       type: SET_RANDOM_CHAMPIONS,
-      payload: randomItem,
+      payload: getRandomChampion(),
     });
     dispatch({ type: SET_RANDOM_ROLES, payload: roles });
   };
