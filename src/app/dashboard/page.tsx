@@ -22,14 +22,16 @@ import {
   SET_RANDOM_RUNES,
   SET_RANDOM_SUMMONERS,
   SET_RANDOM_ROLES,
+  SET_EXCLUDED_ROLES,
   initialState,
   reducer,
 } from "@/store";
 
 export default function Page() {
   const [state, dispatch] = useReducer(reducer, initialState);
+
   const runes = getRandomRunes();
-  const roles = getRandomRole();
+  const roles = getRandomRole(state.excludedRoles);
 
   useEffect(() => {
     if (!state.isRunning) return;
@@ -77,11 +79,34 @@ export default function Page() {
     dispatch({ type: SET_RANDOM_ROLES, payload: roles });
   };
 
+  const onChangeRole = (roleName: string) => {
+    if (!state.excludedRoles.includes(roleName)) {
+      dispatch({
+        type: SET_EXCLUDED_ROLES,
+        payload: [...state.excludedRoles, roleName],
+      });
+    }
+
+    if (state.excludedRoles.includes(roleName)) {
+      dispatch({
+        type: SET_EXCLUDED_ROLES,
+        payload: state.excludedRoles.filter(
+          (role: string) => role !== roleName
+        ),
+      });
+    }
+  };
+
   return (
     <>
       <section>
         <h1>Champions List</h1>
-        <RandomRole randomRole={state.randomRoles} />
+
+        <RandomRole
+          randomRole={state.randomRoles}
+          onChange={onChangeRole}
+          excludedRoles={state.excludedRoles}
+        />
         <button onClick={handleButtonClick}>Get random champion</button>
 
         {state.isRunning && state.champions.length > 0 && (
