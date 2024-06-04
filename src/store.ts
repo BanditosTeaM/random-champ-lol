@@ -6,6 +6,7 @@ export const SET_RANDOM_LEGENDARY_ITEMS = "SET_RANDOM_LEGENDARY_ITEMS";
 export const SET_RANDOM_RUNES = "SET_RANDOM_RUNES";
 export const SET_RANDOM_SUMMONERS = "SET_RANDOM_SUMMONERS";
 export const SET_RANDOM_ROLES = "SET_RANDOM_ROLES";
+export const SET_EXCLUDED_ROLES = "SET_EXCLUDED_ROLES";
 
 export const initialState = {
   champions: [],
@@ -16,6 +17,7 @@ export const initialState = {
   randomRunes: [],
   randomSummoners: [],
   randomRoles: [],
+  excludedRoles: [],
 };
 
 export const reducer = (state, action) => {
@@ -36,6 +38,9 @@ export const reducer = (state, action) => {
       return { ...state, randomSummoners: action.payload };
     case SET_RANDOM_ROLES:
       return { ...state, randomRoles: action.payload };
+    case SET_EXCLUDED_ROLES:
+      return { ...state, excludedRoles: action.payload };
+
     default:
       return state;
   }
