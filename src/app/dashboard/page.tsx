@@ -31,7 +31,6 @@ export default function Page() {
 
   const [state, dispatch] = useReducer(reducer, initialState);
   const runes = getRandomRunes();
-  const summoners = getRandomSummoners();
   const roles = getRandomRole();
 
   useEffect(() => {
@@ -50,9 +49,10 @@ export default function Page() {
         payload: getRandomItems(state.randomRoles[0]?.name),
       });
 
-      if (summoners !== undefined) {
-        dispatch({ type: SET_RANDOM_SUMMONERS, payload: summoners });
-      }
+      dispatch({
+        type: SET_RANDOM_SUMMONERS,
+        payload: getRandomSummoners(state.randomRoles[0]?.name),
+      });
     }, 150);
 
     setTimeout(() => {
