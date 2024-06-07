@@ -7,6 +7,25 @@ export const SET_RANDOM_RUNES = "SET_RANDOM_RUNES";
 export const SET_RANDOM_SUMMONERS = "SET_RANDOM_SUMMONERS";
 export const SET_RANDOM_ROLES = "SET_RANDOM_ROLES";
 export const SET_EXCLUDED_ROLES = "SET_EXCLUDED_ROLES";
+export const SET_EXCLUDED_CHAMPIOINS = "SET_EXCLUDED_CHAMPIOINS";
+
+interface State {
+  champions: string[];
+  lastChampion: string | null;
+  isRunning: boolean;
+  index: number;
+  randomLegendaryItems: string[];
+  randomRunes: string[];
+  randomSummoners: string[];
+  randomRoles: string[];
+  excludedRoles: string[];
+  excludedChampions: string[];
+}
+interface Action {
+  type: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  payload: any;
+}
 
 export const initialState = {
   champions: [],
@@ -18,9 +37,10 @@ export const initialState = {
   randomSummoners: [],
   randomRoles: [],
   excludedRoles: [],
+  excludedChampions: [],
 };
 
-export const reducer = (state, action) => {
+export const reducer = (state: State, action: Action) => {
   switch (action.type) {
     case SET_RANDOM_CHAMPIONS:
       return { ...state, champions: action.payload };
@@ -40,7 +60,8 @@ export const reducer = (state, action) => {
       return { ...state, randomRoles: action.payload };
     case SET_EXCLUDED_ROLES:
       return { ...state, excludedRoles: action.payload };
-
+    case SET_EXCLUDED_CHAMPIOINS:
+      return { ...state, excludedChampions: action.payload };
     default:
       return state;
   }
