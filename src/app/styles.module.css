@@ -1,0 +1,21 @@
+.html,
+.body {
+  min-height: 100%;
+  max-width: 100%;
+}
+
+.body {
+  max-width: 1200px;
+  margin: 0 auto;
+  justify-content: center;
+  align-items: flex-start;
+  background: linear-gradient(
+      180.2deg,
+      rgb(120, 85, 137) -6.9%,
+      rgb(35, 9, 31) 76.7%
+    )
+    no-repeat;
+  background-size: cover;
+
+  color: #f0ffff;
+}
