@@ -1,22 +1,27 @@
 [
   {
     "id": 1,
-    "name": "Top"
+    "name": "Top",
+    "image": "top_icon.png"
   },
   {
     "id": 2,
-    "name": "Jungle"
+    "name": "Jungle",
+    "image": "jungle_icon.png"
   },
   {
     "id": 3,
-    "name": "Mid"
+    "name": "Mid",
+    "image": "mid_icon.png"
   },
   {
     "id": 4,
-    "name": "Bot"
+    "name": "Bot",
+    "image": "bot_icon.png"
   },
   {
     "id": 5,
-    "name": "Support"
+    "name": "Support",
+    "image": "support_icon.png"
   }
 ]
