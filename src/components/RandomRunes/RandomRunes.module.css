@@ -1,0 +1,18 @@
+.runesContainer {
+  width: 50px;
+  height: 200px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Две колонки одинаковой ширины */
+  gap: 0; /* Убираем промежутки между колонками */
+}
+
+.runesContainer > div {
+  width: 50px;
+  height: 100px;
+  display: grid;
+  gap: 0;
+}
+.runesContainer > div:last-child {
+  margin-top: 50px;
+  margin-left: 5px;
+}

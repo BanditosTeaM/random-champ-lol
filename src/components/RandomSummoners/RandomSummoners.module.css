@@ -1,0 +1,13 @@
+.summonersContainer {
+  display: flex;
+  flex-direction: row;
+}
+.buildSummoner {
+  margin-right: 5px;
+}
+.buildSummoner > img {
+  padding: 5px;
+  background-color: #b621fe;
+  border: 1px solid #f0ffff;
+  border-radius: 5px;
+}
