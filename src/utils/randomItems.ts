@@ -39,8 +39,8 @@ export function getRandomItems(role: string): Item[] {
 
   const filteredLegendaryItems = itemsEntries.filter(
     ([, item]) =>
-      item?.depth === 3 &&
-      item?.inStore !== false &&
+      ("depth" in item ? item.depth === 3 : false) &&
+      item?.gold.purchasable !== false &&
       !excludedItems.includes(item?.name)
   );
 
@@ -50,8 +50,8 @@ export function getRandomItems(role: string): Item[] {
         Array.isArray(item.tags) &&
         (item.tags as string[]).includes("Lane") &&
         (item.tags as string[]).includes("GoldPer") &&
-        item?.inStore !== false &&
-        !item?.stacks &&
+        item?.gold.purchasable !== false &&
+        ("stacks" in item ? !item.stacks : true) &&
         !excludedItems.includes(item?.name)
       );
     }
@@ -59,8 +59,8 @@ export function getRandomItems(role: string): Item[] {
     if (role === "Jungle") {
       return (
         Array.isArray(item.tags) &&
-        item?.inStore !== false &&
-        !item?.stacks &&
+        item?.gold.purchasable !== false &&
+        ("stacks" in item ? !item.stacks : true) &&
         (item.tags as string[]).includes("Jungle") &&
         !(item.tags as string[]).includes("Lane") &&
         !excludedItems.includes(item?.name)
@@ -70,8 +70,8 @@ export function getRandomItems(role: string): Item[] {
     return (
       Array.isArray(item.tags) &&
       (item.tags as string[]).includes("Lane") &&
-      item?.inStore !== false &&
-      !item?.stacks &&
+      item?.gold.purchasable !== false &&
+      ("stacks" in item ? !item.stacks : true) &&
       !(item.tags as string[]).includes("Vision") &&
       !(item.tags as string[]).includes("Active") &&
       !(item.tags as string[]).includes("GoldPer") &&
